@@ -15,6 +15,10 @@
  *
  ******************************************************************************/
 
+/*SCL -- SERIAL CLOCK --- PC5
+ * SDA I2C DATA --- PC4
+ *
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,8 +35,12 @@
 
 #include "sleep.h"
 
+//#include "i2c.c"
+
 #define STACK_SIZE_FOR_TASK    (configMINIMAL_STACK_SIZE + 10)
 #define TASK_PRIORITY          (tskIDLE_PRIORITY + 1)
+
+
 
 /* Structure with parameters for LedBlink */
 typedef struct {
@@ -62,6 +70,7 @@ static void LedBlink(void *pParameters)
  ******************************************************************************/
 int main(void)
 {
+
   /* Chip errata */
   CHIP_Init();
   /* If first word of user data page is non-zero, enable Energy Profiler trace */
@@ -79,6 +88,7 @@ int main(void)
   /* do not let to sleep deeper than define */
   SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE + 1));
 #endif
+
 
   /* Parameters value for taks*/
   static TaskParams_t parametersToTask1 = { pdMS_TO_TICKS(1000), 0 };
