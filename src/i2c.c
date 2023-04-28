@@ -7,9 +7,18 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
+#include "i2c.h"
 
 static uint8_t device_addr;
 SemaphoreHandle_t xSemaphore = NULL;
+
+int _write(int file, const char *ptr, int len) {
+    int x;
+    for (x = 0; x < len; x++) {
+       ITM_SendChar (*ptr++);
+    }
+    return (len);
+}
 
 void BSP_I2C_Init(uint8_t addr) {
 
@@ -22,7 +31,7 @@ void BSP_I2C_Init(uint8_t addr) {
 	I2C_Init(I2C1, &i2cInit);
 
 	vSemaphoreCreateBinary( xSemaphore );
-	//if(xSemaphore == NULL)
+
 	device_addr = addr;
 }
 
@@ -105,11 +114,11 @@ bool I2C_ReadRegister(uint8_t reg, uint8_t *val) {
 bool I2C_Test() {
 	uint8_t data;
 
-	I2C_ReadRegister(0xD0, &data);
+	I2C_ReadRegister(0x44, &data);
 
 	printf("I2C: %02X\n", data);
 
-	if (data == 0x60) {
+	if (data == 0x44) {
 		return true;
 	} else {
 		return false;

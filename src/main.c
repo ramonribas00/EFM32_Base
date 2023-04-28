@@ -35,11 +35,11 @@
 
 #include "sleep.h"
 
-//#include "i2c.c"
+#include "i2c.h"
 
 #define STACK_SIZE_FOR_TASK    (configMINIMAL_STACK_SIZE + 10)
 #define TASK_PRIORITY          (tskIDLE_PRIORITY + 1)
-
+#define SFE_ISL29125			RGB_sensor
 
 
 /* Structure with parameters for LedBlink */
@@ -82,7 +82,7 @@ int main(void)
   BSP_LedSet(0);
   BSP_LedSet(1);
 
-  /* Initialize SLEEP driver, no calbacks are used */
+  /* Initialize SLEEP driver, no callbacks are used */
   SLEEP_Init(NULL, NULL);
 #if (configSLEEP_MODE < 3)
   /* do not let to sleep deeper than define */
@@ -93,10 +93,11 @@ int main(void)
   /* Parameters value for taks*/
   static TaskParams_t parametersToTask1 = { pdMS_TO_TICKS(1000), 0 };
   static TaskParams_t parametersToTask2 = { pdMS_TO_TICKS(500), 1 };
-
+  I2C_Test();
   /*Create two task for blinking leds*/
   xTaskCreate(LedBlink, (const char *) "LedBlink1", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
   xTaskCreate(LedBlink, (const char *) "LedBlink2", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
+  //xTaskCreate(I2C_Test, (const char *) "Address Test", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
 
   /*Start FreeRTOS Scheduler*/
   vTaskStartScheduler();
