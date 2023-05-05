@@ -58,17 +58,28 @@ static void LedBlink(void *pParameters)
 {
   TaskParams_t     * pData = (TaskParams_t*) pParameters;
   const portTickType delay = pData->delay;
-
   for (;; ) {
     BSP_LedToggle(pData->ledNo);
+
     vTaskDelay(delay);
   }
 }
 
+static void ReadRGB(void *pParameters)
+{
+  const portTickType delay = pdMS_TO_TICKS(500);
+  RGB values;
+  for (;; ) {
+
+	  values = ReadSensor();
+    vTaskDelay(delay);
+  }
+}
 /***************************************************************************//**
  * @brief  Main function
  ******************************************************************************/
 int main(void)
+
 {
 
   /* Chip errata */
@@ -89,16 +100,16 @@ int main(void)
   SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE + 1));
 #endif
 
+  BSP_I2C_Init(0x88);
 
   /* Parameters value for taks*/
   static TaskParams_t parametersToTask1 = { pdMS_TO_TICKS(1000), 0 };
-  static TaskParams_t parametersToTask2 = { pdMS_TO_TICKS(500), 1 };
-  I2C_Test();
+  static TaskParams_t parametersToTask2 = { pdMS_TO_TICKS(500), 1};
+  static RGB parametersToTask3 = { 0, 0, 0};
   /*Create two task for blinking leds*/
   xTaskCreate(LedBlink, (const char *) "LedBlink1", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
   xTaskCreate(LedBlink, (const char *) "LedBlink2", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
-  //xTaskCreate(I2C_Test, (const char *) "Address Test", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
-
+  xTaskCreate(ReadRGB, (const char *) "ReadRGB", STACK_SIZE_FOR_TASK, &parametersToTask3, TASK_PRIORITY, NULL);
   /*Start FreeRTOS Scheduler*/
   vTaskStartScheduler();
 

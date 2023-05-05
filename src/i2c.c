@@ -9,7 +9,10 @@
 
 #include "i2c.h"
 
+
+
 static uint8_t device_addr;
+
 SemaphoreHandle_t xSemaphore = NULL;
 
 int _write(int file, const char *ptr, int len) {
@@ -103,6 +106,7 @@ bool I2C_ReadRegister(uint8_t reg, uint8_t *val) {
 	}
 
 	if (I2C_Status != i2cTransferDone) {
+		xSemaphoreGive(xSemaphore);
 		return false;
 	}
 
@@ -114,14 +118,26 @@ bool I2C_ReadRegister(uint8_t reg, uint8_t *val) {
 bool I2C_Test() {
 	uint8_t data;
 
-	I2C_ReadRegister(0x44, &data);
+	I2C_ReadRegister(0x00, &data);
 
 	printf("I2C: %02X\n", data);
 
-	if (data == 0x44) {
+	if (data == 0x7D) {
 		return true;
 	} else {
 		return false;
 	}
 
+}
+
+RGB ReadSensor() {
+	uint8_t datalow, datahigh;
+	RGB ReadVal;
+
+	I2C_ReadRegister(0x01, &datalow);
+	I2C_ReadRegister(14, &datahigh);
+	ReadVal.R = 45246;
+	printf("I2C: %02X\n", datalow);
+
+	return ReadVal;
 }
