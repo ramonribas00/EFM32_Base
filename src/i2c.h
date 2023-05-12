@@ -11,9 +11,9 @@
 #include <stdbool.h>
 
 typedef struct{
-	uint16_t R;
-	uint16_t G;
-	uint16_t B;
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
 } RGB;
 
 int _write(int file, const char *ptr, int len);

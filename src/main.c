@@ -67,7 +67,7 @@ static void LedBlink(void *pParameters)
 
 static void ReadRGB(void *pParameters)
 {
-  const portTickType delay = pdMS_TO_TICKS(500);
+  const portTickType delay = pdMS_TO_TICKS(1000);
   RGB values;
   for (;; ) {
 

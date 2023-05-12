@@ -131,13 +131,24 @@ bool I2C_Test() {
 }
 
 RGB ReadSensor() {
-	uint8_t datalow, datahigh;
+	uint8_t datahigh;
 	RGB ReadVal;
+	I2C_WriteRegister(0x01, 5);
+	I2C_WriteRegister(0x02, 0);
+	//I2C_ReadRegister(0x02, &datalow);
+	//printf("I2C: %02X\n", datalow);
 
-	I2C_ReadRegister(0x01, &datalow);
-	I2C_ReadRegister(14, &datahigh);
-	ReadVal.R = 45246;
-	printf("I2C: %02X\n", datalow);
-
+	I2C_ReadRegister(0x0A, &datahigh);
+	ReadVal.G = datahigh;
+	I2C_ReadRegister(0x0C, &datahigh);
+	ReadVal.R = datahigh;
+	I2C_ReadRegister(0x0E, &datahigh);
+	ReadVal.B = datahigh;
+	printf("--------------------\n");
+	printf("I2C R: %d\n", ReadVal.R);
+	printf("I2C G: %d\n", ReadVal.G);
+	printf("I2C B: %d\n", ReadVal.B);
+	printf("--------------------\n");
+	//%02X
 	return ReadVal;
 }
