@@ -16,11 +16,14 @@ typedef struct{
 	uint8_t B;
 } RGB;
 
+typedef enum {ROJO, AZUL, VERDE, AMARILLO, BLANCO, NEGRO, MORADO} Colores;
+static const char *Color_list[] = {"ROJO", "AZUL", "VERDE", "AMARILLO", "BLANCO", "NEGRO", "MORADO"};
+
 int _write(int file, const char *ptr, int len);
 void BSP_I2C_Init(uint8_t addr);
 bool I2C_WriteRegister(uint8_t reg, uint8_t data);
 bool I2C_ReadRegister(uint8_t reg, uint8_t *val);
 bool I2C_Test();
 RGB ReadSensor();
-
+void printColor(Colores color);
 #endif /* SRC_I2C_H_ */

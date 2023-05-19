@@ -15,6 +15,8 @@ static uint8_t device_addr;
 
 SemaphoreHandle_t xSemaphore = NULL;
 
+
+
 int _write(int file, const char *ptr, int len) {
     int x;
     for (x = 0; x < len; x++) {
@@ -118,7 +120,7 @@ bool I2C_ReadRegister(uint8_t reg, uint8_t *val) {
 bool I2C_Test() {
 	uint8_t data;
 
-	I2C_ReadRegister(0x00, &data);
+
 
 	printf("I2C: %02X\n", data);
 
@@ -133,22 +135,30 @@ bool I2C_Test() {
 RGB ReadSensor() {
 	uint8_t datahigh;
 	RGB ReadVal;
-	I2C_WriteRegister(0x01, 5);
 	I2C_WriteRegister(0x02, 0);
 	//I2C_ReadRegister(0x02, &datalow);
 	//printf("I2C: %02X\n", datalow);
-
+	I2C_WriteRegister(0x01, 5);
 	I2C_ReadRegister(0x0A, &datahigh);
 	ReadVal.G = datahigh;
+	//I2C_WriteRegister(0x01, 2);
 	I2C_ReadRegister(0x0C, &datahigh);
 	ReadVal.R = datahigh;
+	//I2C_WriteRegister(0x01, 3);
 	I2C_ReadRegister(0x0E, &datahigh);
 	ReadVal.B = datahigh;
+
 	printf("--------------------\n");
 	printf("I2C R: %d\n", ReadVal.R);
 	printf("I2C G: %d\n", ReadVal.G);
 	printf("I2C B: %d\n", ReadVal.B);
 	printf("--------------------\n");
+
 	//%02X
 	return ReadVal;
+}
+void printColor(Colores color){
+
+	printf("I2C Color: %s\n", Color_list[color%7]);
+
 }

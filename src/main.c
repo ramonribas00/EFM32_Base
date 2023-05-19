@@ -42,6 +42,9 @@
 #define SFE_ISL29125			RGB_sensor
 
 
+
+QueueHandle_t xQueue = NULL;
+QueueHandle_t xQueue2 = NULL;
 /* Structure with parameters for LedBlink */
 typedef struct {
   /* Delay between blink of led */
@@ -70,16 +73,28 @@ static void ReadRGB(void *pParameters)
   const portTickType delay = pdMS_TO_TICKS(1000);
   RGB values;
   for (;; ) {
-
-	  values = ReadSensor();
+	values = ReadSensor();
+	xQueueSend(xQueue2, (void *) &values, (TickType_t ) 0 );
     vTaskDelay(delay);
   }
+}
+
+
+
+static void showColor(void *pParameters)
+{
+	const portTickType delay = pdMS_TO_TICKS(1000);
+	Colores color;
+	  for (;; ) {
+		  xQueueReceive(xQueue, &( color), portMAX_DELAY);
+		  printColor(color);
+	    vTaskDelay(delay);
+	  }
 }
 /***************************************************************************//**
  * @brief  Main function
  ******************************************************************************/
 int main(void)
-
 {
 
   /* Chip errata */
@@ -101,15 +116,17 @@ int main(void)
 #endif
 
   BSP_I2C_Init(0x88);
-
+  xQueue = xQueueCreate(2, sizeof(Colores));
+  xQueue2 = xQueueCreate(5, sizeof(RGB));
   /* Parameters value for taks*/
   static TaskParams_t parametersToTask1 = { pdMS_TO_TICKS(1000), 0 };
-  static TaskParams_t parametersToTask2 = { pdMS_TO_TICKS(500), 1};
+  static TaskParams_t parametersToTask2 = { 0, 0};
   static RGB parametersToTask3 = { 0, 0, 0};
   /*Create two task for blinking leds*/
   xTaskCreate(LedBlink, (const char *) "LedBlink1", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
-  xTaskCreate(LedBlink, (const char *) "LedBlink2", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
   xTaskCreate(ReadRGB, (const char *) "ReadRGB", STACK_SIZE_FOR_TASK, &parametersToTask3, TASK_PRIORITY, NULL);
+  xTaskCreate(showColor, (const char *) "showColor", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
+
   /*Start FreeRTOS Scheduler*/
   vTaskStartScheduler();
 
