@@ -42,9 +42,9 @@
 #define SFE_ISL29125			RGB_sensor
 
 
-
 QueueHandle_t xQueue = NULL;
 QueueHandle_t xQueue2 = NULL;
+
 /* Structure with parameters for LedBlink */
 typedef struct {
   /* Delay between blink of led */
@@ -74,11 +74,28 @@ static void ReadRGB(void *pParameters)
   RGB values;
   for (;; ) {
 	values = ReadSensor();
-	xQueueSend(xQueue2, (void *) &values, (TickType_t ) 0 );
+	xQueueSend(xQueue, (void *) &values, (TickType_t ) 0 );
     vTaskDelay(delay);
   }
 }
 
+static void processRGB(void *pParameters){
+  RGB values;
+  char *color[];
+
+  for (;; ) {
+    if (qHandler != NULL){
+      if (xQueueReceive(xQueue,(void *) &values, portMAX_DELAY) == pdPASS) {
+        printf("Los valores de RGB son:  %02X, %02X, %02X\n", values.R, values.G, values.B);
+        //función que cambie los valores recibidos por el color en concreto a mostrar.
+        xQueueSend(xQueu2, (void *) &color, (TickType_t ) 0 )
+      }
+      else{
+        printf("No se ha recibido la cola correctamente.\n");
+      }
+    }
+  }
+}
 
 
 static void showColor(void *pParameters)
@@ -86,7 +103,7 @@ static void showColor(void *pParameters)
 	const portTickType delay = pdMS_TO_TICKS(1000);
 	Colores color;
 	  for (;; ) {
-		  xQueueReceive(xQueue, &( color), portMAX_DELAY);
+		  if(xQueueReceive(xQueue2, &( color), portMAX_DELAY) == pdPASS);
 		  printColor(color);
 	    vTaskDelay(delay);
 	  }

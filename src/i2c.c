@@ -10,7 +10,6 @@
 #include "i2c.h"
 
 
-
 static uint8_t device_addr;
 
 SemaphoreHandle_t xSemaphore = NULL;
