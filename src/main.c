@@ -57,6 +57,7 @@ typedef struct {
  * @brief Simple task which is blinking led
  * @param *pParameters pointer to parameters passed to the function
  ******************************************************************************/
+/*
 static void LedBlink(void *pParameters)
 {
   TaskParams_t     * pData = (TaskParams_t*) pParameters;
@@ -67,6 +68,7 @@ static void LedBlink(void *pParameters)
     vTaskDelay(delay);
   }
 }
+*/
 
 static void ReadRGB(void *pParameters)
 {
@@ -81,14 +83,19 @@ static void ReadRGB(void *pParameters)
 
 static void processRGB(void *pParameters){
   RGB values;
-  char *color[];
+  RGB valuesaux;
+  Colores color=2;
 
   for (;; ) {
-    if (qHandler != NULL){
+    if (xQueue != NULL){
       if (xQueueReceive(xQueue,(void *) &values, portMAX_DELAY) == pdPASS) {
-        printf("Los valores de RGB son:  %02X, %02X, %02X\n", values.R, values.G, values.B);
+    	valuesaux.R = map(values.R, 0, 65535, 0, 255);
+    	valuesaux.G = map(values.G, 0, 65535, 0, 255);
+    	valuesaux.B = map(values.B, 0, 65535, 0, 255);
+        printf("Los valores de RGB son:  %d, %d, %d\n", valuesaux.R, valuesaux.G, valuesaux.B);
         //función que cambie los valores recibidos por el color en concreto a mostrar.
-        xQueueSend(xQueu2, (void *) &color, (TickType_t ) 0 )
+
+        xQueueSend(xQueue2, (void *) &color, (TickType_t ) 0 );
       }
       else{
         printf("No se ha recibido la cola correctamente.\n");
@@ -103,8 +110,8 @@ static void showColor(void *pParameters)
 	const portTickType delay = pdMS_TO_TICKS(1000);
 	Colores color;
 	  for (;; ) {
-		  if(xQueueReceive(xQueue2, &( color), portMAX_DELAY) == pdPASS);
-		  printColor(color);
+		  if(xQueueReceive(xQueue2, &( color), portMAX_DELAY) == pdPASS)
+			  printColor(color);
 	    vTaskDelay(delay);
 	  }
 }
@@ -133,14 +140,14 @@ int main(void)
 #endif
 
   BSP_I2C_Init(0x88);
-  xQueue = xQueueCreate(2, sizeof(Colores));
-  xQueue2 = xQueueCreate(5, sizeof(RGB));
+  xQueue = xQueueCreate(5, sizeof(RGB));
+  xQueue2 = xQueueCreate(5, sizeof(Colores));
   /* Parameters value for taks*/
-  static TaskParams_t parametersToTask1 = { pdMS_TO_TICKS(1000), 0 };
+  static TaskParams_t parametersToTask1 = { 0, 0 };
   static TaskParams_t parametersToTask2 = { 0, 0};
   static RGB parametersToTask3 = { 0, 0, 0};
   /*Create two task for blinking leds*/
-  xTaskCreate(LedBlink, (const char *) "LedBlink1", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
+  xTaskCreate(processRGB, (const char *) "processRGB", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
   xTaskCreate(ReadRGB, (const char *) "ReadRGB", STACK_SIZE_FOR_TASK, &parametersToTask3, TASK_PRIORITY, NULL);
   xTaskCreate(showColor, (const char *) "showColor", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
 

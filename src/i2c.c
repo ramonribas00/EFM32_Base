@@ -37,6 +37,8 @@ void BSP_I2C_Init(uint8_t addr) {
 	vSemaphoreCreateBinary( xSemaphore );
 
 	device_addr = addr;
+	I2C_WriteRegister(0x01, 5);
+	I2C_WriteRegister(0x08, 0);
 }
 
 /**
@@ -132,25 +134,40 @@ bool I2C_Test() {
 }
 
 RGB ReadSensor() {
-	uint8_t datahigh;
+	uint8_t RdataHi, RdataLo;
+	uint8_t GdataHi, GdataLo;
+	uint8_t BdataHi, BdataLo;
 	RGB ReadVal;
+	uint8_t x;
 	I2C_WriteRegister(0x02, 0);
-	//I2C_ReadRegister(0x02, &datalow);
-	//printf("I2C: %02X\n", datalow);
-	I2C_WriteRegister(0x01, 5);
-	I2C_ReadRegister(0x0A, &datahigh);
-	ReadVal.G = datahigh;
-	//I2C_WriteRegister(0x01, 2);
-	I2C_ReadRegister(0x0C, &datahigh);
-	ReadVal.R = datahigh;
-	//I2C_WriteRegister(0x01, 3);
-	I2C_ReadRegister(0x0E, &datahigh);
-	ReadVal.B = datahigh;
 
+	I2C_ReadRegister(0x08, &x);
+	printf("I2C R: %d\n", x);
 	printf("--------------------\n");
-	printf("I2C R: %d\n", ReadVal.R);
-	printf("I2C G: %d\n", ReadVal.G);
-	printf("I2C B: %d\n", ReadVal.B);
+	if(x==34){
+		//RED READ
+		I2C_ReadRegister(0x0C, &RdataHi);
+		I2C_ReadRegister(0x0B, &RdataLo);
+		ReadVal.R = (uint16_t)((RdataHi << 8) | RdataLo);
+		printf("I2C R: %d\n", ReadVal.R);
+	}
+
+	if(x==18){
+		//GREEN READ
+		I2C_ReadRegister(0x0A, &GdataHi);
+		I2C_ReadRegister(0x09, &GdataLo);
+		ReadVal.G = (uint16_t)((GdataHi << 8) | GdataLo);
+		printf("I2C G: %d\n", ReadVal.G);
+	}
+
+	if(x==50){
+	//BLUE READ
+		I2C_ReadRegister(0x0E, &BdataHi);
+		I2C_ReadRegister(0x0D, &BdataLo);
+		ReadVal.B =(uint16_t)((BdataHi << 8) | BdataLo);
+		printf("I2C B: %d\n", ReadVal.B);
+	}
+
 	printf("--------------------\n");
 
 	//%02X
@@ -160,4 +177,7 @@ void printColor(Colores color){
 
 	printf("I2C Color: %s\n", Color_list[color%7]);
 
+}
+uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }

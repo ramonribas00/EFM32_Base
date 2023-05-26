@@ -11,9 +11,9 @@
 #include <stdbool.h>
 
 typedef struct{
-	uint8_t R;
-	uint8_t G;
-	uint8_t B;
+	uint16_t R;
+	uint16_t G;
+	uint16_t B;
 } RGB;
 
 typedef enum {ROJO, AZUL, VERDE, AMARILLO, BLANCO, NEGRO, MORADO} Colores;
@@ -26,4 +26,5 @@ bool I2C_ReadRegister(uint8_t reg, uint8_t *val);
 bool I2C_Test();
 RGB ReadSensor();
 void printColor(Colores color);
+uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max);
 #endif /* SRC_I2C_H_ */
