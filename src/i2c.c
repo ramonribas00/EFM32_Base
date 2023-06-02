@@ -143,27 +143,27 @@ RGB ReadSensor() {
 	I2C_WriteRegister(0x02, 0);
 
 	//I2C_WriteRegister(0x01, 2);
-	while(x!=34){I2C_ReadRegister(0x08, &x);}
+	//while(x!=34){I2C_ReadRegister(0x08, &x);}
 	//printf("I2C x: %d\n", x);
 	I2C_ReadRegister(0x0C, &RdataHi);
 	I2C_ReadRegister(0x0B, &RdataLo);
-	ReadVal.R = (uint16_t)((RdataHi << 8) | RdataLo);	//RED READ
+	ReadVal.B = (uint16_t)((RdataHi << 8) | RdataLo);	//RED READ
 	//printf("I2C R: %d\n", ReadVal.R);
 	//I2C_WriteRegister(0x01, 1);
 
-	while(x!=18){I2C_ReadRegister(0x08, &x);}
+	//while(x!=18){I2C_ReadRegister(0x08, &x);}
 	//printf("I2C x: %d\n", x);
 	I2C_ReadRegister(0x0A, &GdataHi);
 	I2C_ReadRegister(0x09, &GdataLo);
-	ReadVal.G = (uint16_t)((GdataHi << 8) | GdataLo);	//GREEN READ
+	ReadVal.R = (uint16_t)((GdataHi << 8) | GdataLo);	//GREEN READ
 	//printf("I2C G: %d\n", ReadVal.G);
 
 	//I2C_WriteRegister(0x01, 3);
-	while(x!=50){I2C_ReadRegister(0x08, &x);}
+	//while(x!=50){I2C_ReadRegister(0x08, &x);}
 	//printf("I2C x: %d\n", x);
 	I2C_ReadRegister(0x0E, &BdataHi);
 	I2C_ReadRegister(0x0D, &BdataLo);
-	ReadVal.B =(uint16_t)((BdataHi << 8) | BdataLo);	//BLUE READ
+	ReadVal.G =(uint16_t)((BdataHi << 8) | BdataLo);	//BLUE READ
 	//printf("I2C B: %d\n", ReadVal.B);
 
 
