@@ -84,7 +84,9 @@ static void ReadRGB(void *pParameters)
 static void processRGB(void *pParameters){
   RGB values;
   RGB valuesaux;
-  Colores color=2;
+
+
+  Colores color;
 
   for (;; ) {
     if (xQueue != NULL){
@@ -93,7 +95,10 @@ static void processRGB(void *pParameters){
     	valuesaux.G = map(values.G, 0, 65535, 0, 255);
     	valuesaux.B = map(values.B, 0, 65535, 0, 255);
         printf("Los valores de RGB son:  %d, %d, %d\n", valuesaux.R, valuesaux.G, valuesaux.B);
-        //función que cambie los valores recibidos por el color en concreto a mostrar.
+
+        color = processColor(valuesaux);
+
+        //funcion que cambie los valores recibidos por el color en concreto a mostrar.
 
         xQueueSend(xQueue2, (void *) &color, (TickType_t ) 0 );
       }

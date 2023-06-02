@@ -134,48 +134,80 @@ bool I2C_Test() {
 }
 
 RGB ReadSensor() {
-	uint8_t RdataHi, RdataLo;
-	uint8_t GdataHi, GdataLo;
-	uint8_t BdataHi, BdataLo;
+	uint8_t RdataHi=0, RdataLo;
+	uint8_t GdataHi=0, GdataLo;
+	uint8_t BdataHi=0, BdataLo;
+
 	RGB ReadVal;
-	uint8_t x;
+	uint8_t x=0;
 	I2C_WriteRegister(0x02, 0);
 
-	I2C_ReadRegister(0x08, &x);
-	printf("I2C R: %d\n", x);
-	printf("--------------------\n");
-	if(x==34){
-		//RED READ
-		I2C_ReadRegister(0x0C, &RdataHi);
-		I2C_ReadRegister(0x0B, &RdataLo);
-		ReadVal.R = (uint16_t)((RdataHi << 8) | RdataLo);
-		printf("I2C R: %d\n", ReadVal.R);
-	}
+	//I2C_WriteRegister(0x01, 2);
+	while(x!=34){I2C_ReadRegister(0x08, &x);}
+	//printf("I2C x: %d\n", x);
+	I2C_ReadRegister(0x0C, &RdataHi);
+	I2C_ReadRegister(0x0B, &RdataLo);
+	ReadVal.R = (uint16_t)((RdataHi << 8) | RdataLo);	//RED READ
+	//printf("I2C R: %d\n", ReadVal.R);
+	//I2C_WriteRegister(0x01, 1);
 
-	if(x==18){
-		//GREEN READ
-		I2C_ReadRegister(0x0A, &GdataHi);
-		I2C_ReadRegister(0x09, &GdataLo);
-		ReadVal.G = (uint16_t)((GdataHi << 8) | GdataLo);
-		printf("I2C G: %d\n", ReadVal.G);
-	}
+	while(x!=18){I2C_ReadRegister(0x08, &x);}
+	//printf("I2C x: %d\n", x);
+	I2C_ReadRegister(0x0A, &GdataHi);
+	I2C_ReadRegister(0x09, &GdataLo);
+	ReadVal.G = (uint16_t)((GdataHi << 8) | GdataLo);	//GREEN READ
+	//printf("I2C G: %d\n", ReadVal.G);
 
-	if(x==50){
-	//BLUE READ
-		I2C_ReadRegister(0x0E, &BdataHi);
-		I2C_ReadRegister(0x0D, &BdataLo);
-		ReadVal.B =(uint16_t)((BdataHi << 8) | BdataLo);
-		printf("I2C B: %d\n", ReadVal.B);
-	}
+	//I2C_WriteRegister(0x01, 3);
+	while(x!=50){I2C_ReadRegister(0x08, &x);}
+	//printf("I2C x: %d\n", x);
+	I2C_ReadRegister(0x0E, &BdataHi);
+	I2C_ReadRegister(0x0D, &BdataLo);
+	ReadVal.B =(uint16_t)((BdataHi << 8) | BdataLo);	//BLUE READ
+	//printf("I2C B: %d\n", ReadVal.B);
+
 
 	printf("--------------------\n");
 
 	//%02X
 	return ReadVal;
 }
+
+Colores processColor(RGB rgb){
+	uint8_t r, g, b;
+	r=rgb.R/(uint8_t)128;
+	g=rgb.G/(uint8_t)128;
+	b=rgb.B/(uint8_t)128;
+	//printf("Los valores de RGB son:  %d, %d, %d\n", r, g, b);
+	Colores result;
+	switch(r){
+	case 0:		//VERDE-AZUL-NEGRO-CIAN
+			if(g==0){	//NEGRO-AZUL
+				if(b==0) result=5;
+				else	result=1;
+			}else{ //VERDE-CIAN
+				if(b==0) result=2;
+				else result=7;
+			}
+		break;
+	case 1:		//ROJO-AMARILLO-MORADO-BLANCO
+		if(g==0){	//ROJO-MORADO
+			if(b==0) result=0;
+			else	result=6;
+		}else{ //AMARILLO-BLANCO
+			if(b==0) result=3;
+			else result=4;
+		}
+		break;
+	default: printf("------------\n");
+		break;
+	}
+	return result;
+}
+
 void printColor(Colores color){
 
-	printf("I2C Color: %s\n", Color_list[color%7]);
+	printf("I2C Color: %s\n", Color_list[color%8]);
 
 }
 uint16_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max) {

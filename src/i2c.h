@@ -10,14 +10,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+
 typedef struct{
 	uint16_t R;
 	uint16_t G;
 	uint16_t B;
 } RGB;
 
-typedef enum {ROJO, AZUL, VERDE, AMARILLO, BLANCO, NEGRO, MORADO} Colores;
-static const char *Color_list[] = {"ROJO", "AZUL", "VERDE", "AMARILLO", "BLANCO", "NEGRO", "MORADO"};
+typedef enum {ROJO, AZUL, VERDE, AMARILLO, BLANCO, NEGRO, MORADO, CIAN} Colores;
+static const char *Color_list[] = {"ROJO", "AZUL", "VERDE", "AMARILLO", "BLANCO", "NEGRO", "MORADO", "CIAN"};
 
 int _write(int file, const char *ptr, int len);
 void BSP_I2C_Init(uint8_t addr);
